@@ -45,6 +45,9 @@ body{
 #audio-image .cover{
 	width:100%;
 }
+#audio-player{
+  padding: 0 0 .6em .6em;
+}
 
 #audio-info{
 	text-align:center;
@@ -58,7 +61,7 @@ input#volume{
 	width:95%;
 	margin-left:2%;
 	-webkit-appearance:none !important;
-  background:cadetblue;
+  background:#5CC6D0;
   border-radius: 1em;
 }
 input#volume::-webkit-slider-thumb{
@@ -82,6 +85,21 @@ button#play{
 	background:url(../images/play.png) no-repeat;
 	float:left;
 	margin-left:-2px;
+}
+#img-button-1{
+  display: grid;
+  justify-content: end;
+  grid-auto-flow: column;
+  grid-column-gap: .5em;
+	margin:2% 3% 0 0;
+}
+#muted{
+	width:1.4em;
+	height:1.4em;
+}
+#loop{
+	width:1.4em;
+	height:1.4em;
 }
 
 button#pause{
