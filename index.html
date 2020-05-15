@@ -14,10 +14,13 @@
 				<span class="artist"></span> - <span class="title"></span>
       </div>
       <div style="display: grid;grid-template-columns: min-content 1fr">
-        <label for="volume">Volume</label>
-        <input id="volume" type="range" min="0" max="10" value="10">
+        <label for="volume" style="margin-left:.2em;">Volume</label>
+        <input id="volume" type="range" min="0" max="100" value="100">
       </div>
-			<br>
+      <div id="img-button-1">
+        <img id="muted" src="./images/muted.png" alt="no-img" onclick="muteVolume()" />
+        <img id="loop" src="./images/loop.png" alt="no-img" onclick="loopFile()" />
+      </div>
 			<div id="buttons">
 				<span>
 					<button id="prev"></button>
