@@ -1,15 +1,27 @@
-var audio;
-
+let audio;
+let pauseBtn        = $('#pause');
+let playBtn         = $('#play');
+let stopBtn         = $('#stop');
+let nextBtn         = $('#next');
+let prevBtn         = $('#prev');
+let muteBtn         = $('#muted');
+let loopBtn         = $('#loop');
+let volBtn          = $('#volume');
+let durationFile    = $('#duration');
+let progressFile    = $('#progress');
+let listFile        = $('#playlist li');
+let listFileLast    = $('#playlist li:last-child');
+let listFileFirst   = $('#playlist li:first-child');
 //Hide Pause
 $('#pause').hide();
 
-initAudio($('#playlist li:first-child'));
+initAudio(listFileFirst);
 
 function initAudio(element){
-	var song = element.attr('song');
-	var title = element.text();
-	var cover = element.attr('cover');
-	var artist = element.attr('artist');
+	let song = element.attr('song');
+	let title = element.text();
+	let cover = element.attr('cover');
+	let artist = element.attr('artist');
 	
 	//Create audio object
 	audio = new Audio('media/'+ song);
@@ -21,84 +33,123 @@ function initAudio(element){
 	//Insert song cover
 	$('img.cover').attr('src','images/covers/'+cover);
 	
-	$('#playlist li').removeClass('active');
+	listFile.removeClass('active');
 	element.addClass('active');
 }
 
+const pausePlay = () => {
+  playBtn.hide();
+  pauseBtn.show();
+}
+const playPause = () => {
+  playBtn.show();
+  pauseBtn.hide();
+}
+const playPauseTimeout = () => {
+  playBtn.show();
+  setTimeout(() => {
+    pausePlay();
+  }, 10);
+}
+
 //Play button
-$('#play').click(function(){
-	audio.play();
-	$('#play').hide();
-	$('#pause').show();
+playBtn.click(function(){
+  audio.play();
+	pausePlay();
 	showDuration();
 });
 
 //Pause button
-$('#pause').click(function(){
+pauseBtn.click(function(){
 	audio.pause();
-	$('#play').show();
-	$('#pause').hide();
+	playPause();
 });
 
 //Stop button
-$('#stop').click(function(){
-	audio.pause();
+stopBtn.click(function(){
+  audio.pause();	
 	audio.currentTime = 0;
+  playPause();
 });
 
 //Next button
-$('#next').click(function(){
+nextBtn.click(function(){
 	audio.pause();
-	var next = $('#playlist li.active').next();
+	let next = $('#playlist li.active').next();
 	if(next.length == 0){
-		next = $('#playlist li:first-child');
-	}
+		next = listFileFirst;
+  }
+  playPauseTimeout();
 	initAudio(next);
 	audio.play();
 	showDuration();
 });
 
 //Prev button
-$('#prev').click(function(){
+prevBtn.click(function(){
 	audio.pause();
-	var prev = $('#playlist li.active').prev();
+	let prev = $('#playlist li.active').prev();
 	if(prev.length == 0){
-		prev = $('#playlist li:last-child');
-	}
+		prev = listFileLast;
+  }
+  playPauseTimeout();
 	initAudio(prev);
 	audio.play();
 	showDuration();
 });
 
 //Playlist song click
-$('#playlist li').click(function(){
+listFile.click(function(){
 	audio.pause();
 	initAudio($(this));
-	$('#play').hide();
-	$('#pause').show();
+	pausePlay();
 	audio.play();
 	showDuration();
 });
 
 //Volume control
-$('#volume').change(function(){
-	audio.volume = parseFloat(this.value / 10);
+volBtn.change(function(){
+  audio.volume = parseFloat(this.value / 100);
 });
 
+const muteVolume = () => {
+  let muted = audio.muted;
+  audio.muted = !muted;
+  audio.muted ? muteBtn.css('border','solid brown .2em') : muteBtn.css('border','none');
+}
+const loopFile = () => {
+  let loop = audio.loop;
+  audio.loop = !loop;
+  audio.loop ? loopBtn.css('border','solid brown .2em') : loopBtn.css('border','none');
+}
+
 //Time/Duration
-function showDuration(){
-	$(audio).bind('timeupdate',function(){
+const showDuration = () => {
+  $(audio).bind('timeupdate',function(){
+    let durationData,playTime;
+    durationData = audio.duration;
+    playTime = audio.currentTime;
 		//Get hours and minutes
-		var s = parseInt(audio.currentTime % 60);
-		var m = parseInt(audio.currentTime / 60) % 60;
+		let s = parseInt(audio.currentTime % 60);
+		let m = parseInt(audio.currentTime / 60) % 60;
 		if(s < 10){
 			s = '0'+s;
 		}
-		$('#duration').html(m + ':'+ s);
-		var value = 0;
+		durationFile.html(m + ':'+ s);
+		let value = 0;
 		if(audio.currentTime > 0){
 			value = Math.floor((100 / audio.duration) * audio.currentTime);
 		}
-		$('#progress').css('width',value+'%');
+    progressFile.css('width',value+'%');
+    let next = $('#playlist li.active').next();
+    if(parseInt(durationData) == parseInt(playTime) && !audio.loop) {
+      playPauseTimeout();
+      if(next.length == 0){
+        next = listFileFirst;
+      }
+      initAudio(next);
+      audio.play();
+	    showDuration();
+    }
 	});
 }
